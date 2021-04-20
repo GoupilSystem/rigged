@@ -8,6 +8,7 @@ import { HexColorPicker } from "react-colorful"
 import { proxy, useProxy } from "valtio"
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { Map0 } from "./map0";
+import { Try } from "./try";
 import { useStore } from "./audioStore";
 
 import "./styles.css"
@@ -17,15 +18,9 @@ import "./styles.css"
 const state = proxy({
   current: null,
   items: {
-    Material_Mouth: "#ffffff",
-    Material_Eye: "#ffffff",
-    Material_Lips: "#ffffff",
-    Material_Shoe: "#ffffff",
-    Material_Hair: "#ffffff",
-    Material_Short: "#ffffff",
-    Material_Skin: "#ffffff",
+    Material_Shoe: "#CF022B",
+    Material_Short: "#FF892F",
     Material_Body: "#ffffff",
-
   },
 })
 
@@ -57,7 +52,7 @@ export default function App({ mouse, ...props }) {
     }
 
     // Set animation
-    const [mixer] = useState(() => new THREE.AnimationMixer());
+    var [mixer] = useState(() => new THREE.AnimationMixer());
     useEffect(() => {
       void mixer.clipAction(animations[0], kjellRef.current).play(), []
     })
@@ -71,6 +66,12 @@ export default function App({ mouse, ...props }) {
     useFrame((state) => {
 
       mixer.update(0.01);
+
+      if (mixer.time > 15) {
+        mixer.clipAction(animations[0], kjellRef.current).play();
+        mixer.clipAction(animations[0], kjellRef.current).time = 7.53;
+        mixer.time = 7.53;
+      }
 
       if (mixer.time < 5) {
         if (mixer.time > 4.2) {
@@ -146,13 +147,11 @@ export default function App({ mouse, ...props }) {
             <skinnedMesh
               geometry={nodes.Cube_2.geometry}
               material={materials.Material_Eye}
-              material-color={snap.items.Material_Eye}
               skeleton={nodes.Cube_2.skeleton}
             />
             <skinnedMesh
               geometry={nodes.Cube_3.geometry}
               material={materials.Material_Lips}
-              material-color={snap.items.Material_Lips}
               skeleton={nodes.Cube_3.skeleton}
             />
             <skinnedMesh
@@ -164,7 +163,6 @@ export default function App({ mouse, ...props }) {
             <skinnedMesh
               geometry={nodes.Cube_5.geometry}
               material={materials.Material_Hair}
-              material-color={snap.items.Material_Hair}
               skeleton={nodes.Cube_5.skeleton}
             />
             <skinnedMesh
@@ -176,19 +174,16 @@ export default function App({ mouse, ...props }) {
             <skinnedMesh
               geometry={nodes.Cube_7.geometry}
               material={materials.Material_Skin}
-              material-color={snap.items.Material_Skin}
               skeleton={nodes.Cube_7.skeleton}
             />
             <skinnedMesh
               geometry={nodes.Cube_8.geometry}
               material={materials.Material_Pupil}
-              material-color={snap.items.Material_Pupil}
               skeleton={nodes.Cube_8.skeleton}
             />
-            <skinnedMesh
+            <skinnedMesh castShadow
               geometry={nodes.Cube_9.geometry}
               material={materials.Material_Body}
-              material-color={snap.items.Material_Body}
               skeleton={nodes.Cube_9.skeleton}
             />
           </group>
@@ -225,12 +220,12 @@ export default function App({ mouse, ...props }) {
   const Lights = () => {
     return (
       <>
-        <hemisphereLight skyColor="#b1e1ff" groundColor="#aaaaaa" intensity={0.4} />
-        <pointLight position={[30, 50, 30]} color="#aaaaaa" intensity={0.15} />
+        <hemisphereLight skyColor="#b1e1ff" groundColor="#aaaaaa" intensity={0.25} />
+        <pointLight position={[30, 50, 30]} color="#aaaaaa" intensity={0.5} />
         <pointLight
           position={[100, 100, -100]}
           color="#aaaba9"
-          intensity={0.25}
+          intensity={0.75}
           castShadow
           shadow-mapSize-height={1024}
           shadow-mapSize-width={1024} />
@@ -248,7 +243,9 @@ export default function App({ mouse, ...props }) {
         </div>
       }
       {!intro &&
-        (<Canvas shadowMap camera={{ far: 5000, near: 1, position: [100, 5, 100], fov: 5 }}>
+        (<Canvas shadows = "true" shadowMap
+          onCreated={({ gl }) => { gl.toneMapping = THREE.NoToneMapping }}
+          camera={{ far: 5000, near: 1, position: [100, 5, 100], fov: 5 }}>
           <CameraController />
           <Lights />
           <Suspense fallback={null}>
@@ -261,8 +258,4 @@ export default function App({ mouse, ...props }) {
       <Picker />
     </>
   )
-
-
-
-
 }
