@@ -57,7 +57,7 @@ export default function App({ mouse, ...props }) {
       void mixer.clipAction(animations[0], kjellRef.current).play(), []
     })
 
-    // Event manager
+    // Event manager 
     const [chapter, setChapter] = useState(-1);
 
     // Audio
